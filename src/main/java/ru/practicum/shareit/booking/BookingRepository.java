@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.booking.enums.Status;
+import ru.practicum.shareit.booking.enums.BookingState;
 import ru.practicum.shareit.booking.model.Booking;
 
 import java.util.List;
@@ -41,7 +41,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Page<Booking> findCurrentBookingsByBooker(Long bookerId, Pageable pageable);
 
     @Query("select b from Booking b where b.status = ?1 and b.user.id = ?2 order by b.start desc")
-    Page<Booking> findByStatusByBooker(Status status, Long bookerId, Pageable pageable);
+    Page<Booking> findByStatusByBooker(BookingState bookingState, Long bookerId, Pageable pageable);
 
     @Query("select b from Booking b where b.start > CURRENT_TIMESTAMP and b.item.user.id = ?1 order by b.start desc")
     Page<Booking> findFutureBookingsByOwner(Long bookerId, Pageable pageable);
@@ -54,9 +54,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Page<Booking> findCurrentBookingsByOwner(Long bookerId, Pageable pageable);
 
     @Query("select b from Booking b where b.status = ?1 and b.item.user.id = ?2 order by b.start desc")
-    Page<Booking> findByStatusByOwner(Status status, Long bookerId, Pageable pageable);
+    Page<Booking> findByStatusByOwner(BookingState bookingState, Long bookerId, Pageable pageable);
 
     @Modifying
     @Query("update Booking b set b.status = ?1 where b.id = ?2")
-    void updateBookingStatus(Status status, Long bookerId);
+    void updateBookingStatus(BookingState bookingState, Long bookerId);
 }

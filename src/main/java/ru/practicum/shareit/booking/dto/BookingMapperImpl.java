@@ -25,7 +25,7 @@ public class BookingMapperImpl implements BookingMapper {
         BookingResponseDto dto = new BookingResponseDto();
         dto.setId(booking.getId());
         dto.setItem(booking.getItem());
-        dto.setStatus(booking.getStatus());
+        dto.setBookingState(booking.getBookingState());
         dto.setUser(booking.getUser());
         dto.setStart(booking.getStart());
         dto.setEnd(booking.getEnd());
@@ -43,7 +43,7 @@ public class BookingMapperImpl implements BookingMapper {
         dto.setEnd(booking.getEnd());
         dto.setBookerId(booking.getUser().getId());
         dto.setItemId(booking.getItem().getId());
-        dto.setStatus(booking.getStatus());
+        dto.setBookingState(booking.getBookingState());
         return dto;
     }
 }

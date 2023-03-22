@@ -10,7 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.BookingPaginationParams;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.enums.Status;
+import ru.practicum.shareit.booking.enums.BookingState;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
@@ -257,8 +257,8 @@ public class BookingRepositoryTests {
     }
 
     @ParameterizedTest
-    @EnumSource(Status.class)
-    public void testFindByStatusByBooker(Status status) {
+    @EnumSource(BookingState.class)
+    public void testFindByStatusByBooker(BookingState bookingState) {
         User user = new User(1L, "user name", "email@email.com");
         User itemOwner = new User(2L, "itemOwner name", "email@email2.com");
         userRepository.saveAll(List.of(user, itemOwner));
@@ -268,16 +268,16 @@ public class BookingRepositoryTests {
         itemRepository.saveAll(List.of(item1, item2));
 
         Booking booking1 = new Booking(1L, item1, user);
-        booking1.setStatus(status);
+        booking1.setBookingState(bookingState);
         Booking booking2 = new Booking(2L, item1, user);
-        booking2.setStatus(status);
+        booking2.setBookingState(bookingState);
         Booking booking3 = new Booking(3L, item2, user);
 
         bookingRepository.saveAll(List.of(booking1, booking2, booking3));
 
         BookingPaginationParams params = new BookingPaginationParams(0, 20);
 
-        Page<Booking> result = bookingRepository.findByStatusByBooker(status, user.getId(),
+        Page<Booking> result = bookingRepository.findByStatusByBooker(bookingState, user.getId(),
                 PageRequest.of(params.getFrom(), params.getSize()));
         assertEquals(2, result.getContent().size());
         assertTrue(result.getContent().contains(booking1));
@@ -375,8 +375,8 @@ public class BookingRepositoryTests {
     }
 
     @ParameterizedTest
-    @EnumSource(Status.class)
-    public void testFindByStatusByOwner(Status status) {
+    @EnumSource(BookingState.class)
+    public void testFindByStatusByOwner(BookingState bookingState) {
         User user = new User(1L, "user name", "email@email.com");
         User itemOwner = new User(2L, "itemOwner name", "email@email2.com");
         userRepository.saveAll(List.of(user, itemOwner));
@@ -386,16 +386,16 @@ public class BookingRepositoryTests {
         itemRepository.saveAll(List.of(item1, item2));
 
         Booking booking1 = new Booking(1L, item1, user);
-        booking1.setStatus(status);
+        booking1.setBookingState(bookingState);
         Booking booking2 = new Booking(2L, item1, user);
-        booking2.setStatus(status);
+        booking2.setBookingState(bookingState);
         Booking booking3 = new Booking(3L, item2, user);
 
         bookingRepository.saveAll(List.of(booking1, booking2, booking3));
 
         BookingPaginationParams params = new BookingPaginationParams(0, 20);
 
-        Page<Booking> result = bookingRepository.findByStatusByOwner(status, itemOwner.getId(),
+        Page<Booking> result = bookingRepository.findByStatusByOwner(bookingState, itemOwner.getId(),
                 PageRequest.of(params.getFrom(), params.getSize()));
         assertEquals(2, result.getContent().size());
         assertTrue(result.getContent().contains(booking1));
@@ -415,16 +415,16 @@ public class BookingRepositoryTests {
         itemRepository.save(item);
 
         Booking booking = new Booking(1L, item, user);
-        booking.setStatus(Status.WAITING);
+        booking.setBookingState(BookingState.WAITING);
         bookingRepository.save(booking);
         Booking getBooking = bookingRepository.findById(booking.getId()).get();
-        getBooking.setStatus(Status.APPROVED);
+        getBooking.setBookingState(BookingState.APPROVED);
 
-        bookingRepository.updateBookingStatus(Status.REJECTED, booking.getId());
+        bookingRepository.updateBookingStatus(BookingState.REJECTED, booking.getId());
 
         Optional<Booking> optionalBooking = bookingRepository.findById(booking.getId());
         assertTrue(optionalBooking.isPresent());
         assertEquals(item, optionalBooking.get().getItem());
-        assertEquals(Status.APPROVED, optionalBooking.get().getStatus());
+        assertEquals(BookingState.APPROVED, optionalBooking.get().getBookingState());
     }
 }

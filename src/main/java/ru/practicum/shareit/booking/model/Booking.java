@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import ru.practicum.shareit.booking.enums.Status;
+import ru.practicum.shareit.booking.enums.BookingState;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -40,22 +40,22 @@ public class Booking {
     private User user;
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private BookingState bookingState;
 
-    public Booking(Long id, LocalDateTime start, LocalDateTime end, Status status) {
+    public Booking(Long id, LocalDateTime start, LocalDateTime end, BookingState bookingState) {
         this.id = id;
         this.start = start;
         this.end = end;
-        this.status = status;
+        this.bookingState = bookingState;
     }
 
-    public Booking(Long id, LocalDateTime start, LocalDateTime end, Item item, User user, Status status) {
+    public Booking(Long id, LocalDateTime start, LocalDateTime end, Item item, User user, BookingState bookingState) {
         this.id = id;
         this.start = start;
         this.end = end;
         this.item = item;
         this.user = user;
-        this.status = status;
+        this.bookingState = bookingState;
     }
 
     public Booking(Long id, Item item, User user) {
@@ -69,11 +69,11 @@ public class Booking {
         if (this == o) return true;
         if (!(o instanceof Booking)) return false;
         Booking booking = (Booking) o;
-        return Objects.equals(getId(), booking.getId()) && Objects.equals(getStart(), booking.getStart()) && Objects.equals(getEnd(), booking.getEnd()) && Objects.equals(getItem(), booking.getItem()) && Objects.equals(getUser(), booking.getUser()) && getStatus() == booking.getStatus();
+        return Objects.equals(getId(), booking.getId()) && Objects.equals(getStart(), booking.getStart()) && Objects.equals(getEnd(), booking.getEnd()) && Objects.equals(getItem(), booking.getItem()) && Objects.equals(getUser(), booking.getUser()) && getBookingState() == booking.getBookingState();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getStart(), getEnd(), getItem(), getUser(), getStatus());
+        return Objects.hash(getId(), getStart(), getEnd(), getItem(), getUser(), getBookingState());
     }
 }

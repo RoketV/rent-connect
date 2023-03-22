@@ -1,9 +1,9 @@
-package ru.practicum.shareit.request;
+package itemRequest;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.user.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;

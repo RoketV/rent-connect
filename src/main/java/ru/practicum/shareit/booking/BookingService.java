@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
-import ru.practicum.shareit.booking.enums.Status;
+import ru.practicum.shareit.booking.enums.BookingState;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exceptions.*;
 import ru.practicum.shareit.item.ItemRepository;
@@ -51,7 +51,7 @@ public class BookingService {
         Booking booking = BookingMapper.BOOKING_MAPPER.toBooking(dto);
         booking.setItem(item);
         booking.setUser(user);
-        booking.setStatus(Status.WAITING);
+        booking.setBookingState(BookingState.WAITING);
         log.info("booking for item with id {} created by user with id {}", item.getId(), userId);
         return BookingMapper.BOOKING_MAPPER.toDto(bookingRepository.save(booking));
     }
@@ -67,18 +67,18 @@ public class BookingService {
             throw new WrongOwnerException(String.format("user with id %d is not an owner " +
                     "for item with id %d", userId, item.getId()));
         }
-        if (booking.getStatus() == Status.APPROVED) {
+        if (booking.getBookingState() == BookingState.APPROVED) {
             throw new BookingConsistencyException(String.format("booking with id %d is already approved", bookingId));
         }
         if (approved) {
-            booking.setStatus(Status.APPROVED);
+            booking.setBookingState(BookingState.APPROVED);
             log.info("booking with id {} approved", bookingId);
         }
         if (!approved) {
-            booking.setStatus(Status.REJECTED);
+            booking.setBookingState(BookingState.REJECTED);
             log.info("booking with id {} rejected", bookingId);
         }
-        bookingRepository.updateBookingStatus(booking.getStatus(), bookingId);
+        bookingRepository.updateBookingStatus(booking.getBookingState(), bookingId);
         return BookingMapper.BOOKING_MAPPER.toDto(booking);
     }
 
@@ -125,14 +125,14 @@ public class BookingService {
                         .collect(Collectors.toList());
             case "WAITING":
                 return bookingRepository.findByStatusByBooker(
-                                Status.WAITING, bookerId, PageRequest.of(params.getFrom(), params.getSize()))
+                                BookingState.WAITING, bookerId, PageRequest.of(params.getFrom(), params.getSize()))
                         .getContent()
                         .stream()
                         .map(BookingMapper.BOOKING_MAPPER::toDto)
                         .collect(Collectors.toList());
             case "REJECTED":
                 return bookingRepository.findByStatusByBooker(
-                                Status.REJECTED, bookerId, PageRequest.of(params.getFrom(), params.getSize()))
+                                BookingState.REJECTED, bookerId, PageRequest.of(params.getFrom(), params.getSize()))
                         .getContent()
                         .stream()
                         .map(BookingMapper.BOOKING_MAPPER::toDto)
@@ -174,14 +174,14 @@ public class BookingService {
                         .collect(Collectors.toList());
             case "WAITING":
                 return bookingRepository.findByStatusByOwner(
-                                Status.WAITING, ownerId, PageRequest.of(params.getFrom(), params.getSize()))
+                                BookingState.WAITING, ownerId, PageRequest.of(params.getFrom(), params.getSize()))
                         .getContent()
                         .stream()
                         .map(BookingMapper.BOOKING_MAPPER::toDto)
                         .collect(Collectors.toList());
             case "REJECTED":
                 return bookingRepository.findByStatusByOwner(
-                                Status.REJECTED, ownerId, PageRequest.of(params.getFrom(), params.getSize()))
+                                BookingState.REJECTED, ownerId, PageRequest.of(params.getFrom(), params.getSize()))
                         .getContent()
                         .stream()
                         .map(BookingMapper.BOOKING_MAPPER::toDto)

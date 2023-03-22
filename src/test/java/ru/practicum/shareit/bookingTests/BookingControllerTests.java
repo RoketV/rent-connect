@@ -15,7 +15,7 @@ import ru.practicum.shareit.booking.BookingPaginationParams;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
-import ru.practicum.shareit.booking.enums.Status;
+import ru.practicum.shareit.booking.enums.BookingState;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -62,7 +62,7 @@ public class BookingControllerTests {
         responseDto.setUser(new User(1L, "name", "email@email.com"));
         responseDto.setStart(LocalDateTime.now());
         responseDto.setEnd(LocalDateTime.now().plusDays(1));
-        responseDto.setStatus(Status.APPROVED);
+        responseDto.setBookingState(BookingState.APPROVED);
 
         when(bookingService.createBooking(any(BookingRequestDto.class), anyLong())).thenReturn(responseDto);
 
@@ -73,7 +73,7 @@ public class BookingControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(responseDto.getId()))
                 .andExpect(jsonPath("$.booker.id").value(responseDto.getUser().getId()))
-                .andExpect(jsonPath("$.status").value(responseDto.getStatus().toString()));
+                .andExpect(jsonPath("$.status").value(responseDto.getBookingState().toString()));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class BookingControllerTests {
         responseDto.setUser(new User(userId, "name", "email@email.com"));
         responseDto.setStart(LocalDateTime.now());
         responseDto.setEnd(LocalDateTime.now().plusDays(1));
-        responseDto.setStatus(Status.APPROVED);
+        responseDto.setBookingState(BookingState.APPROVED);
 
         when(bookingService.approveBooking(eq(bookingId), eq(userId), eq(approved))).thenReturn(responseDto);
 
@@ -97,7 +97,7 @@ public class BookingControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(responseDto.getId()))
                 .andExpect(jsonPath("$.booker.id").value(responseDto.getUser().getId()))
-                .andExpect(jsonPath("$.status").value(responseDto.getStatus().toString()));
+                .andExpect(jsonPath("$.status").value(responseDto.getBookingState().toString()));
     }
 
     @Test
@@ -110,7 +110,7 @@ public class BookingControllerTests {
         responseDto.setUser(new User(userId, "name", "email@email.com"));
         responseDto.setStart(LocalDateTime.now());
         responseDto.setEnd(LocalDateTime.now().plusDays(1));
-        responseDto.setStatus(Status.APPROVED);
+        responseDto.setBookingState(BookingState.APPROVED);
 
         when(bookingService.getBooking(eq(bookingId), eq(userId))).thenReturn(responseDto);
 
@@ -119,7 +119,7 @@ public class BookingControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(responseDto.getId()))
                 .andExpect(jsonPath("$.booker.id").value(responseDto.getUser().getId()))
-                .andExpect(jsonPath("$.status").value(responseDto.getStatus().toString()));
+                .andExpect(jsonPath("$.status").value(responseDto.getBookingState().toString()));
     }
 
     @Test
@@ -137,14 +137,14 @@ public class BookingControllerTests {
         responseDto1.setUser(user);
         responseDto1.setStart(LocalDateTime.now());
         responseDto1.setEnd(LocalDateTime.now().plusDays(1));
-        responseDto1.setStatus(Status.APPROVED);
+        responseDto1.setBookingState(BookingState.APPROVED);
 
         BookingResponseDto responseDto2 = new BookingResponseDto();
         responseDto2.setId(bookingId2);
         responseDto2.setUser(user);
         responseDto2.setStart(LocalDateTime.now());
         responseDto2.setEnd(LocalDateTime.now().plusDays(1));
-        responseDto2.setStatus(Status.APPROVED);
+        responseDto2.setBookingState(BookingState.APPROVED);
 
         List<BookingResponseDto> responseDtos = Arrays.asList(responseDto1, responseDto2);
         BookingPaginationParams params = new BookingPaginationParams(0, 20);
@@ -160,10 +160,10 @@ public class BookingControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(responseDto1.getId()))
                 .andExpect(jsonPath("$[0].booker.id").value(responseDto1.getUser().getId()))
-                .andExpect(jsonPath("$[0].status").value(responseDto1.getStatus().toString()))
+                .andExpect(jsonPath("$[0].status").value(responseDto1.getBookingState().toString()))
                 .andExpect(jsonPath("$[1].id").value(responseDto2.getId()))
                 .andExpect(jsonPath("$[1].booker.id").value(responseDto2.getUser().getId()))
-                .andExpect(jsonPath("$[1].status").value(responseDto2.getStatus().toString()));
+                .andExpect(jsonPath("$[1].status").value(responseDto2.getBookingState().toString()));
     }
 
     @Test
@@ -185,7 +185,7 @@ public class BookingControllerTests {
         responseDto1.setUser(user);
         responseDto1.setStart(LocalDateTime.now());
         responseDto1.setEnd(LocalDateTime.now().plusDays(1));
-        responseDto1.setStatus(Status.APPROVED);
+        responseDto1.setBookingState(BookingState.APPROVED);
 
         BookingResponseDto responseDto2 = new BookingResponseDto();
         responseDto2.setId(bookingId2);
@@ -193,7 +193,7 @@ public class BookingControllerTests {
         responseDto2.setUser(user);
         responseDto2.setStart(LocalDateTime.now());
         responseDto2.setEnd(LocalDateTime.now().plusDays(1));
-        responseDto2.setStatus(Status.APPROVED);
+        responseDto2.setBookingState(BookingState.APPROVED);
 
         List<BookingResponseDto> responseDtos = Arrays.asList(responseDto1, responseDto2);
         BookingPaginationParams params = new BookingPaginationParams(0, 20);
@@ -209,9 +209,9 @@ public class BookingControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(responseDto1.getId()))
                 .andExpect(jsonPath("$[0].booker.id").value(responseDto1.getUser().getId()))
-                .andExpect(jsonPath("$[0].status").value(responseDto1.getStatus().toString()))
+                .andExpect(jsonPath("$[0].status").value(responseDto1.getBookingState().toString()))
                 .andExpect(jsonPath("$[1].id").value(responseDto2.getId()))
                 .andExpect(jsonPath("$[1].booker.id").value(responseDto2.getUser().getId()))
-                .andExpect(jsonPath("$[1].status").value(responseDto2.getStatus().toString()));
+                .andExpect(jsonPath("$[1].status").value(responseDto2.getBookingState().toString()));
     }
 }

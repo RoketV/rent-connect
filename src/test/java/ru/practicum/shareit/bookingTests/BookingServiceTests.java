@@ -17,7 +17,7 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
-import ru.practicum.shareit.booking.enums.Status;
+import ru.practicum.shareit.booking.enums.BookingState;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exceptions.*;
 import ru.practicum.shareit.item.ItemRepository;
@@ -169,7 +169,7 @@ public class BookingServiceTests {
         Long bookingId = 1L;
         Long userId = 2L;
         User user = new User(userId, "John Doe", "email@email.com");
-        Booking booking = new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusHours(1), Status.WAITING);
+        Booking booking = new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusHours(1), BookingState.WAITING);
         Item item = new Item(2L, "Item 1", "description", true, user);
         booking.setItem(item);
 
@@ -179,11 +179,11 @@ public class BookingServiceTests {
         BookingResponseDto result = bookingService.approveBooking(bookingId, userId, true);
 
         assertNotNull(result);
-        assertEquals(Status.APPROVED, result.getStatus());
+        assertEquals(BookingState.APPROVED, result.getBookingState());
 
         verify(bookingRepository, times(1)).findById(bookingId);
         verify(userRepository, times(1)).findById(userId);
-        verify(bookingRepository, times(1)).updateBookingStatus(Status.APPROVED, bookingId);
+        verify(bookingRepository, times(1)).updateBookingStatus(BookingState.APPROVED, bookingId);
     }
 
     @Test
@@ -201,7 +201,7 @@ public class BookingServiceTests {
     public void approveBooking_withNonExistentUser_throwsEntityNotFoundException() {
         Long bookingId = 1L;
         Long userId = 2L;
-        Booking booking = new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusHours(1), Status.WAITING);
+        Booking booking = new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusHours(1), BookingState.WAITING);
 
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
@@ -214,7 +214,7 @@ public class BookingServiceTests {
     public void approveBooking_withNonMatchingUser_throwsWrongOwnerException() {
         Long bookingId = 1L;
         Long userId = 2L;
-        Booking booking = new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusHours(1), Status.WAITING);
+        Booking booking = new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusHours(1), BookingState.WAITING);
         User user = new User(userId, "John Doe", "email@email.ua");
         Item item = new Item(2L, "Item 1", "description", true, new User());
         booking.setItem(item);
@@ -237,7 +237,7 @@ public class BookingServiceTests {
         Long bookingId = 3L;
         User user = new User(userId, "John Doe", "email@email.com");
         Item item = new Item(itemId, "Item 1", "description", true, user);
-        Booking booking = new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusHours(1), item, user, Status.WAITING);
+        Booking booking = new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusHours(1), item, user, BookingState.WAITING);
         when(bookingRepository.findByIdAndItem_User_IdOrUser_Id(bookingId, userId)).thenReturn(Optional.of(booking));
 
         BookingResponseDto bookingResponseDto = bookingService.getBooking(bookingId, userId);
@@ -265,11 +265,11 @@ public class BookingServiceTests {
         User user = new User(bookerId, "John Doe", "email@email.com");
         List<Booking> bookings = Arrays.asList(
                 new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(1L, "Item 1", "description 1", true, user), user, Status.APPROVED),
+                        new Item(1L, "Item 1", "description 1", true, user), user, BookingState.APPROVED),
                 new Booking(2L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(2L, "Item 2", "description 2", true, user), user, Status.REJECTED),
+                        new Item(2L, "Item 2", "description 2", true, user), user, BookingState.REJECTED),
                 new Booking(3L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(3L, "Item 3", "description3", true, user), user, Status.WAITING));
+                        new Item(3L, "Item 3", "description3", true, user), user, BookingState.WAITING));
         when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
         when(bookingRepository.findAllByUser_Id(bookerId)).thenReturn(bookings);
 
@@ -302,11 +302,11 @@ public class BookingServiceTests {
         User user = new User(bookerId, "John Doe", "email@email.com");
         List<Booking> bookings = Arrays.asList(
                 new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(1L, "Item 1", "description 1", true, user), user, Status.APPROVED),
+                        new Item(1L, "Item 1", "description 1", true, user), user, BookingState.APPROVED),
                 new Booking(2L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(2L, "Item 2", "description 2", true, user), user, Status.REJECTED),
+                        new Item(2L, "Item 2", "description 2", true, user), user, BookingState.REJECTED),
                 new Booking(3L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(3L, "Item 3", "description3", true, user), user, Status.WAITING));
+                        new Item(3L, "Item 3", "description3", true, user), user, BookingState.WAITING));
         Page<Booking> bookingPage = new PageImpl<>(bookings);
         when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
         when(bookingRepository.findFutureBookingsByBooker(bookerId, PageRequest.of(params.getFrom(), params.getSize())))
@@ -330,11 +330,11 @@ public class BookingServiceTests {
         User user = new User(bookerId, "John Doe", "email@email.com");
         List<Booking> bookings = Arrays.asList(
                 new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(1L, "Item 1", "description 1", true, user), user, Status.APPROVED),
+                        new Item(1L, "Item 1", "description 1", true, user), user, BookingState.APPROVED),
                 new Booking(2L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(2L, "Item 2", "description 2", true, user), user, Status.REJECTED),
+                        new Item(2L, "Item 2", "description 2", true, user), user, BookingState.REJECTED),
                 new Booking(3L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(3L, "Item 3", "description3", true, user), user, Status.WAITING));
+                        new Item(3L, "Item 3", "description3", true, user), user, BookingState.WAITING));
         Page<Booking> bookingPage = new PageImpl<>(bookings);
         when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
         when(bookingRepository.findPastBookingsByBooker(bookerId, PageRequest.of(params.getFrom(), params.getSize())))
@@ -358,11 +358,11 @@ public class BookingServiceTests {
         User user = new User(bookerId, "John Doe", "email@email.com");
         List<Booking> bookings = Arrays.asList(
                 new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(1L, "Item 1", "description 1", true, user), user, Status.APPROVED),
+                        new Item(1L, "Item 1", "description 1", true, user), user, BookingState.APPROVED),
                 new Booking(2L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(2L, "Item 2", "description 2", true, user), user, Status.REJECTED),
+                        new Item(2L, "Item 2", "description 2", true, user), user, BookingState.REJECTED),
                 new Booking(3L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(3L, "Item 3", "description3", true, user), user, Status.WAITING));
+                        new Item(3L, "Item 3", "description3", true, user), user, BookingState.WAITING));
         Page<Booking> bookingPage = new PageImpl<>(bookings);
         when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
         when(bookingRepository.findCurrentBookingsByBooker(bookerId, PageRequest.of(params.getFrom(), params.getSize())))
@@ -386,14 +386,14 @@ public class BookingServiceTests {
         User user = new User(bookerId, "John Doe", "email@email.com");
         List<Booking> bookings = Arrays.asList(
                 new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(1L, "Item 1", "description 1", true, user), user, Status.WAITING),
+                        new Item(1L, "Item 1", "description 1", true, user), user, BookingState.WAITING),
                 new Booking(2L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(2L, "Item 2", "description 2", true, user), user, Status.WAITING),
+                        new Item(2L, "Item 2", "description 2", true, user), user, BookingState.WAITING),
                 new Booking(3L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(3L, "Item 3", "description3", true, user), user, Status.WAITING));
+                        new Item(3L, "Item 3", "description3", true, user), user, BookingState.WAITING));
         Page<Booking> bookingPage = new PageImpl<>(bookings);
         when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
-        when(bookingRepository.findByStatusByBooker(Status.WAITING, bookerId, PageRequest.of(params.getFrom(), params.getSize())))
+        when(bookingRepository.findByStatusByBooker(BookingState.WAITING, bookerId, PageRequest.of(params.getFrom(), params.getSize())))
                 .thenReturn(bookingPage);
 
         List<BookingResponseDto> result = bookingService.getBookingsByBooker(bookerId, state, params);
@@ -403,7 +403,7 @@ public class BookingServiceTests {
         assertEquals(bookings.get(1).getId(), result.get(1).getId());
         assertEquals(bookings.get(2).getId(), result.get(2).getId());
         verify(userRepository).findById(bookerId);
-        verify(bookingRepository).findByStatusByBooker(Status.WAITING, bookerId, PageRequest.of(params.getFrom(), params.getSize()));
+        verify(bookingRepository).findByStatusByBooker(BookingState.WAITING, bookerId, PageRequest.of(params.getFrom(), params.getSize()));
     }
 
     @Test
@@ -414,14 +414,14 @@ public class BookingServiceTests {
         User user = new User(bookerId, "John Doe", "email@email.com");
         List<Booking> bookings = Arrays.asList(
                 new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(1L, "Item 1", "description 1", true, user), user, Status.REJECTED),
+                        new Item(1L, "Item 1", "description 1", true, user), user, BookingState.REJECTED),
                 new Booking(2L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(2L, "Item 2", "description 2", true, user), user, Status.REJECTED),
+                        new Item(2L, "Item 2", "description 2", true, user), user, BookingState.REJECTED),
                 new Booking(3L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(3L, "Item 3", "description3", true, user), user, Status.REJECTED));
+                        new Item(3L, "Item 3", "description3", true, user), user, BookingState.REJECTED));
         Page<Booking> bookingPage = new PageImpl<>(bookings);
         when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
-        when(bookingRepository.findByStatusByBooker(Status.REJECTED, bookerId, PageRequest.of(params.getFrom(), params.getSize())))
+        when(bookingRepository.findByStatusByBooker(BookingState.REJECTED, bookerId, PageRequest.of(params.getFrom(), params.getSize())))
                 .thenReturn(bookingPage);
 
         List<BookingResponseDto> result = bookingService.getBookingsByBooker(bookerId, state, params);
@@ -431,7 +431,7 @@ public class BookingServiceTests {
         assertEquals(bookings.get(1).getId(), result.get(1).getId());
         assertEquals(bookings.get(2).getId(), result.get(2).getId());
         verify(userRepository).findById(bookerId);
-        verify(bookingRepository).findByStatusByBooker(Status.REJECTED, bookerId, PageRequest.of(params.getFrom(), params.getSize()));
+        verify(bookingRepository).findByStatusByBooker(BookingState.REJECTED, bookerId, PageRequest.of(params.getFrom(), params.getSize()));
     }
 
     @Test
@@ -457,11 +457,11 @@ public class BookingServiceTests {
         User user = new User(ownerId, "John Doe", "email@email.com");
         List<Booking> bookings = Arrays.asList(
                 new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(1L, "Item 1", "description 1", true, user), user, Status.APPROVED),
+                        new Item(1L, "Item 1", "description 1", true, user), user, BookingState.APPROVED),
                 new Booking(2L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(2L, "Item 2", "description 2", true, user), user, Status.REJECTED),
+                        new Item(2L, "Item 2", "description 2", true, user), user, BookingState.REJECTED),
                 new Booking(3L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(3L, "Item 3", "description3", true, user), user, Status.WAITING));
+                        new Item(3L, "Item 3", "description3", true, user), user, BookingState.WAITING));
         Page<Booking> bookingPage = new PageImpl<>(bookings);
         when(userRepository.findById(ownerId)).thenReturn(Optional.of(user));
         when(bookingRepository.findAllByOwner(ownerId, PageRequest.of(params.getFrom(), params.getSize())))
@@ -496,11 +496,11 @@ public class BookingServiceTests {
         User user = new User(bookerId, "John Doe", "email@email.com");
         List<Booking> bookings = Arrays.asList(
                 new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(1L, "Item 1", "description 1", true, user), user, Status.APPROVED),
+                        new Item(1L, "Item 1", "description 1", true, user), user, BookingState.APPROVED),
                 new Booking(2L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(2L, "Item 2", "description 2", true, user), user, Status.REJECTED),
+                        new Item(2L, "Item 2", "description 2", true, user), user, BookingState.REJECTED),
                 new Booking(3L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(3L, "Item 3", "description3", true, user), user, Status.WAITING));
+                        new Item(3L, "Item 3", "description3", true, user), user, BookingState.WAITING));
         Page<Booking> bookingPage = new PageImpl<>(bookings);
         when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
         when(bookingRepository.findFutureBookingsByOwner(bookerId, PageRequest.of(params.getFrom(), params.getSize())))
@@ -524,11 +524,11 @@ public class BookingServiceTests {
         User user = new User(bookerId, "John Doe", "email@email.com");
         List<Booking> bookings = Arrays.asList(
                 new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(1L, "Item 1", "description 1", true, user), user, Status.APPROVED),
+                        new Item(1L, "Item 1", "description 1", true, user), user, BookingState.APPROVED),
                 new Booking(2L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(2L, "Item 2", "description 2", true, user), user, Status.REJECTED),
+                        new Item(2L, "Item 2", "description 2", true, user), user, BookingState.REJECTED),
                 new Booking(3L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(3L, "Item 3", "description3", true, user), user, Status.WAITING));
+                        new Item(3L, "Item 3", "description3", true, user), user, BookingState.WAITING));
         Page<Booking> bookingPage = new PageImpl<>(bookings);
         when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
         when(bookingRepository.findPastBookingsByOwner(bookerId, PageRequest.of(params.getFrom(), params.getSize())))
@@ -552,11 +552,11 @@ public class BookingServiceTests {
         User user = new User(bookerId, "John Doe", "email@email.com");
         List<Booking> bookings = Arrays.asList(
                 new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(1L, "Item 1", "description 1", true, user), user, Status.APPROVED),
+                        new Item(1L, "Item 1", "description 1", true, user), user, BookingState.APPROVED),
                 new Booking(2L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(2L, "Item 2", "description 2", true, user), user, Status.REJECTED),
+                        new Item(2L, "Item 2", "description 2", true, user), user, BookingState.REJECTED),
                 new Booking(3L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(3L, "Item 3", "description3", true, user), user, Status.WAITING));
+                        new Item(3L, "Item 3", "description3", true, user), user, BookingState.WAITING));
         Page<Booking> bookingPage = new PageImpl<>(bookings);
         when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
         when(bookingRepository.findCurrentBookingsByOwner(bookerId, PageRequest.of(params.getFrom(), params.getSize())))
@@ -580,14 +580,14 @@ public class BookingServiceTests {
         User user = new User(bookerId, "John Doe", "email@email.com");
         List<Booking> bookings = Arrays.asList(
                 new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(1L, "Item 1", "description 1", true, user), user, Status.WAITING),
+                        new Item(1L, "Item 1", "description 1", true, user), user, BookingState.WAITING),
                 new Booking(2L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(2L, "Item 2", "description 2", true, user), user, Status.WAITING),
+                        new Item(2L, "Item 2", "description 2", true, user), user, BookingState.WAITING),
                 new Booking(3L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(3L, "Item 3", "description3", true, user), user, Status.WAITING));
+                        new Item(3L, "Item 3", "description3", true, user), user, BookingState.WAITING));
         Page<Booking> bookingPage = new PageImpl<>(bookings);
         when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
-        when(bookingRepository.findByStatusByOwner(Status.WAITING, bookerId, PageRequest.of(params.getFrom(), params.getSize())))
+        when(bookingRepository.findByStatusByOwner(BookingState.WAITING, bookerId, PageRequest.of(params.getFrom(), params.getSize())))
                 .thenReturn(bookingPage);
 
         List<BookingResponseDto> result = bookingService.getBookingsByOwner(bookerId, state, params);
@@ -597,7 +597,7 @@ public class BookingServiceTests {
         assertEquals(bookings.get(1).getId(), result.get(1).getId());
         assertEquals(bookings.get(2).getId(), result.get(2).getId());
         verify(userRepository).findById(bookerId);
-        verify(bookingRepository).findByStatusByOwner(Status.WAITING, bookerId, PageRequest.of(params.getFrom(), params.getSize()));
+        verify(bookingRepository).findByStatusByOwner(BookingState.WAITING, bookerId, PageRequest.of(params.getFrom(), params.getSize()));
     }
 
     @Test
@@ -608,14 +608,14 @@ public class BookingServiceTests {
         User user = new User(bookerId, "John Doe", "email@email.com");
         List<Booking> bookings = Arrays.asList(
                 new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(1L, "Item 1", "description 1", true, user), user, Status.REJECTED),
+                        new Item(1L, "Item 1", "description 1", true, user), user, BookingState.REJECTED),
                 new Booking(2L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(2L, "Item 2", "description 2", true, user), user, Status.REJECTED),
+                        new Item(2L, "Item 2", "description 2", true, user), user, BookingState.REJECTED),
                 new Booking(3L, LocalDateTime.now(), LocalDateTime.now().plusHours(2),
-                        new Item(3L, "Item 3", "description3", true, user), user, Status.REJECTED));
+                        new Item(3L, "Item 3", "description3", true, user), user, BookingState.REJECTED));
         Page<Booking> bookingPage = new PageImpl<>(bookings);
         when(userRepository.findById(bookerId)).thenReturn(Optional.of(user));
-        when(bookingRepository.findByStatusByOwner(Status.REJECTED, bookerId, PageRequest.of(params.getFrom(), params.getSize())))
+        when(bookingRepository.findByStatusByOwner(BookingState.REJECTED, bookerId, PageRequest.of(params.getFrom(), params.getSize())))
                 .thenReturn(bookingPage);
 
         List<BookingResponseDto> result = bookingService.getBookingsByOwner(bookerId, state, params);
@@ -625,7 +625,7 @@ public class BookingServiceTests {
         assertEquals(bookings.get(1).getId(), result.get(1).getId());
         assertEquals(bookings.get(2).getId(), result.get(2).getId());
         verify(userRepository).findById(bookerId);
-        verify(bookingRepository).findByStatusByOwner(Status.REJECTED, bookerId, PageRequest.of(params.getFrom(), params.getSize()));
+        verify(bookingRepository).findByStatusByOwner(BookingState.REJECTED, bookerId, PageRequest.of(params.getFrom(), params.getSize()));
     }
 
     @Test
