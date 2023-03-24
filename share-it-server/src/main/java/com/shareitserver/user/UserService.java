@@ -1,0 +1,67 @@
+package com.shareitserver.user;
+
+import com.shareitserver.exceptions.EntityNotFoundException;
+import com.shareitserver.user.dto.UserDto;
+import com.shareitserver.user.dto.UserMapper;
+import com.shareitserver.user.model.User;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class UserService {
+
+    private final UserRepositoryServer userRepositoryServer;
+
+    @Transactional
+    public UserDto addUser(UserDto dto) {
+        log.info("user with name {} added to database", dto.getName());
+        return UserMapper.USER_MAPPER.toDto(userRepositoryServer.save(UserMapper.USER_MAPPER.toUser(dto)));
+    }
+
+    @Transactional
+    public UserDto updateUser(UserDto dto, Long id) {
+        User user = userRepositoryServer.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("user with id %d not found", id)));
+        if (dto.getName() != null) {
+            user.setName(dto.getName());
+        }
+        if (dto.getEmail() != null) {
+            user.setEmail(dto.getEmail());
+        }
+        log.info("user with id {} updated in database", id);
+        return UserMapper.USER_MAPPER.toDto(userRepositoryServer.save(user));
+    }
+
+    public UserDto getUser(Long id) {
+        return UserMapper.USER_MAPPER.toDto(userRepositoryServer.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("no user with %d id found", id))));
+    }
+
+    public Set<UserDto> getUsers() {
+        return userRepositoryServer.findAll()
+                .stream()
+                .map(UserMapper.USER_MAPPER::toDto)
+                .sorted(Comparator.comparing(UserDto::getId))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    @Transactional
+    public UserDto deleteUser(Long id) {
+        Optional<User> user = userRepositoryServer.findById(id);
+        user.ifPresent(userRepositoryServer::delete);
+        log.info("user with id {} deleted from database", id);
+        return UserMapper.USER_MAPPER.toDto(user
+                .orElseThrow(() -> new EntityNotFoundException(String.format("no user with %d id to delete", id))));
+    }
+}
+
