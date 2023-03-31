@@ -16,5 +16,6 @@ public class BookingResponseDto {
     private Item item;
     @JsonProperty("booker")
     private User user;
+    @JsonProperty("status")
     private BookingState bookingState;
 }

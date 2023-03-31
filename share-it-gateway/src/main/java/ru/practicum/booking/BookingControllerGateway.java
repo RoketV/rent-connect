@@ -1,13 +1,13 @@
 package ru.practicum.booking;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.booking.dto.BookingRequestDto;
 import ru.practicum.booking.dto.BookingResponseDto;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
@@ -33,7 +33,7 @@ public class BookingControllerGateway {
     @GetMapping("{bookingId}")
     public ResponseEntity<BookingResponseDto> getBooking(@PathVariable Long bookingId,
                                                          @RequestHeader("X-Sharer-User-Id") @NotNull Long userId) {
-        return bookingClient.getBooking(bookingId, userId);
+        return bookingClient.getBooking(userId, bookingId);
     }
 
     @GetMapping
@@ -45,7 +45,7 @@ public class BookingControllerGateway {
     }
 
     @GetMapping("/owner")
-    public ResponseEntity<List<BookingResponseDto>> getBookingsByOwner(@RequestHeader("X-Sharer-User-Id") @NotNull Long ownerId,
+    public ResponseEntity<?> getBookingsByOwner(@RequestHeader("X-Sharer-User-Id") @NotNull Long ownerId,
                                                                        @RequestParam(required = false,
                                                                                defaultValue = "ALL") String state,
                                                                        @Valid BookingPaginationParams params) {

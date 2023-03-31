@@ -1,11 +1,11 @@
 package ru.practicum.user;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.user.dto.UserDto;
 
+import javax.validation.Valid;
 import java.util.Set;
 
 
@@ -35,9 +35,9 @@ public class UserControllerGateway {
     public ResponseEntity<Set<UserDto>> getUsers() {
         return userClient.getUsers();
     }
-//
-//    @DeleteMapping("/{userId}")
-//    public ResponseEntity<UserDto> deleteUser(@PathVariable Long userId) {
-//        return ResponseEntity.ok(userClient.deleteUser(userId));
-//    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<UserDto> deleteUser(@PathVariable Long userId) {
+        return userClient.deleteUser(userId);
+    }
 }

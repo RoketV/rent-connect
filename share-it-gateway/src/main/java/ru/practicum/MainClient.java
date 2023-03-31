@@ -1,5 +1,7 @@
-package ru.practicum.client;
+package ru.practicum;
 
+import com.google.gson.Gson;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -8,12 +10,15 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.Map;
 
-public class BaseClient {
+public class MainClient {
     protected final RestTemplate rest;
 
-    public BaseClient(RestTemplate rest) {
+    public MainClient(RestTemplate rest) {
         this.rest = rest;
     }
+
+    @Autowired
+    protected Gson gson;
 
     protected ResponseEntity<Object> get(String path) {
         return get(path, null, null);
@@ -27,7 +32,7 @@ public class BaseClient {
         return makeAndSendRequest(HttpMethod.GET, path, userId, parameters, null);
     }
 
-     protected <T> ResponseEntity<Object> post(String path, T body) {
+    protected <T> ResponseEntity<Object> post(String path, T body) {
         return post(path, null, null, body);
     }
 
@@ -101,7 +106,7 @@ public class BaseClient {
         return headers;
     }
 
-    private static ResponseEntity<Object> prepareGatewayResponse(ResponseEntity<Object> response) {
+    protected static <T> ResponseEntity<T> prepareGatewayResponse(ResponseEntity<T> response) {
         if (response.getStatusCode().is2xxSuccessful()) {
             return response;
         }

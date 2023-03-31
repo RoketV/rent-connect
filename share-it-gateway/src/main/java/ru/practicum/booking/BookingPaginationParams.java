@@ -1,19 +1,12 @@
 package ru.practicum.booking;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import lombok.Data;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
-@Data
-public class BookingPaginationParams {
-    @Min(0)
-    private final Integer from;
-    @Max(20)
-    @Min(1)
-    private final Integer size;
 
+public record BookingPaginationParams(@Min(0) Integer from, @Max(20) @Min(1) Integer size) {
     public BookingPaginationParams(@RequestParam(value = "from", defaultValue = "0") Integer from,
                                    @RequestParam(value = "size", defaultValue = "20") Integer size) {
         if (from == null) {

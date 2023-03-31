@@ -1,8 +1,9 @@
 package ru.practicum.user.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 @Data
 public class UserDto {
@@ -13,13 +14,4 @@ public class UserDto {
     @Email
     @NotBlank
     private String email;
-
-    public UserDto(Long id, String name, String email) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
     }
-
-    public UserDto() {
-    }
-}

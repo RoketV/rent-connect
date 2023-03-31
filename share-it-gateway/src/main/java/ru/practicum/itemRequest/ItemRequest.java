@@ -1,42 +1,27 @@
 package ru.practicum.itemRequest;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import ru.practicum.user.User;
 
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Entity
+
 @Getter
 @Setter
 @ToString
-@Table(name = "requests", schema = "public")
 public class ItemRequest {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "description")
+
     @NotBlank
     private String description;
-    @Column(name = "created")
+
     private LocalDateTime created;
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
+
     private User user;
-
-    public ItemRequest(Long id, String description, LocalDateTime created, User user) {
-        this.id = id;
-        this.description = description;
-        this.created = created;
-        this.user = user;
-    }
-
-    public ItemRequest() {
-    }
 
     @Override
     public boolean equals(Object o) {

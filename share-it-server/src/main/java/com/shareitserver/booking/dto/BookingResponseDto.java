@@ -1,6 +1,6 @@
 package com.shareitserver.booking.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import com.shareitserver.booking.enums.BookingState;
 import com.shareitserver.item.model.Item;
 import com.shareitserver.user.model.User;
@@ -15,8 +15,10 @@ public class BookingResponseDto {
     private LocalDateTime start;
     private LocalDateTime end;
     private Item item;
-    @JsonProperty("booker")
+ //   @JsonProperty("booker")
+    @SerializedName("booker")
     private User user;
-    @JsonProperty("status")
+  //  @JsonProperty("status")
+    @SerializedName("status")
     private BookingState bookingState;
 }
