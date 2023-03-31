@@ -9,6 +9,8 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.MainClient;
+import ru.practicum.comment.dto.CommentInputDto;
+import ru.practicum.comment.dto.CommentOutputDto;
 import ru.practicum.item.dto.ItemInputDto;
 import ru.practicum.item.dto.ItemOutputDto;
 import ru.practicum.util.ResponseMaker;
@@ -63,6 +65,11 @@ public class ItemClient extends MainClient {
     public ResponseEntity<ItemOutputDto> deleteItem(Long itemId) {
         ResponseEntity<Object> response = delete("/" + itemId.toString());
         return responseMaker.makeResponse(response, ItemOutputDto.class);
+    }
+
+    public ResponseEntity<CommentOutputDto> addComment(CommentInputDto dto, Long itemId, Long userId) {
+        ResponseEntity<Object> response = post("/" + itemId + "/comment", userId, dto);
+        return responseMaker.makeResponse(response, CommentOutputDto.class);
     }
 
     protected ResponseEntity<List<ItemOutputDto>> searchItem(String text, ItemPaginationParams params) {

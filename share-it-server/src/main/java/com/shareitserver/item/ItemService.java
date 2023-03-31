@@ -3,6 +3,7 @@ package com.shareitserver.item;
 import com.shareitserver.booking.BookingRepository;
 import com.shareitserver.booking.dto.BookingInItemResponseDto;
 import com.shareitserver.booking.dto.BookingMapper;
+import com.shareitserver.booking.enums.BookingState;
 import com.shareitserver.booking.model.Booking;
 import com.shareitserver.comments.Comment;
 import com.shareitserver.comments.CommentRepository;
@@ -92,7 +93,7 @@ public class ItemService {
     public ItemOutputDto getItem(Long ownerId, Long itemId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("item with id %s not found", itemId)));
-        List<Booking> bookings = bookingRepository.findAllByItem_Id(itemId);
+        List<Booking> bookings = bookingRepository.findAllByItem_IdAndBookingState(itemId, BookingState.APPROVED);
         ItemOutputDto dto = ItemMapper.ITEM_MAPPER.toDto(item);
         List<CommentOutputDto> comments = commentRepository.findAllByItem_Id(itemId)
                 .stream()
@@ -104,7 +105,7 @@ public class ItemService {
         }
         LocalDateTime now = LocalDateTime.now();
         for (Booking booking : bookings) {
-            if (booking.getEnd().isBefore(now)) {
+            if (booking.getStart().isBefore(now)) {
                 dto.setLastBooking(BookingMapper.BOOKING_MAPPER.toBookingInItemDto(booking));
             }
             if (booking.getStart().isAfter(now)) {

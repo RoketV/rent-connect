@@ -21,7 +21,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select b from Booking b where b.user.id = ?1 order by b.start desc")
     List<Booking> findAllByUser_Id(Long bookerId);
 
-    List<Booking> findAllByItem_Id(Long itemId);
+    List<Booking> findAllByItem_IdAndBookingState(Long itemId, BookingState state);
 
     List<Booking> findAllByItem_User_Id(Long ownerId);
 
@@ -38,7 +38,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findPastBookingsByBookerAndItem(Long bookerId, Long itemId);
 
     @Query("select b from Booking b where (b.start < current_timestamp and b.end > current_timestamp ) " +
-            "and b.user.id = ?1 order by b.start desc")
+            "and b.user.id = ?1 order by b.start desc ")
     Page<Booking> findCurrentBookingsByBooker(Long bookerId, Pageable pageable);
 
     @Query("select b from Booking b where b.bookingState = ?1 and b.user.id = ?2 order by b.start desc")

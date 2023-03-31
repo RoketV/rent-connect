@@ -89,7 +89,7 @@ public class BookingRepositoryTests {
         Booking booking2 = new Booking(2L, item, user);
         bookingRepository.saveAll(List.of(booking1, booking2));
 
-        List<Booking> result = bookingRepository.findAllByItem_Id(item.getId());
+        List<Booking> result = bookingRepository.findAllByItem_IdAndBookingState(item.getId());
         assertEquals(2, result.size());
         assertTrue(result.contains(booking1));
         assertTrue(result.contains(booking2));

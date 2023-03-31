@@ -14,6 +14,12 @@ public class UriPathBuilderWithParams {
         return builder.build().encode().toUri();
     }
 
+    public static URI buildUri(String serverUrl, String apiPrefix, String path) {
+        String url = serverUrl + apiPrefix + path;
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
+        return builder.build().encode().toUri();
+    }
+
     public static URI buildUri(String serverUrl, String apiPrefix, String path,
                                Map<String, String> parameters, Map<String, String> pathVariable) {
         String url = serverUrl + apiPrefix + path;

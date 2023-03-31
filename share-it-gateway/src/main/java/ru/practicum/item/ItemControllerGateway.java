@@ -3,6 +3,8 @@ package ru.practicum.item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.comment.dto.CommentInputDto;
+import ru.practicum.comment.dto.CommentOutputDto;
 import ru.practicum.item.dto.ItemInputDto;
 import ru.practicum.item.dto.ItemOutputDto;
 
@@ -53,10 +55,10 @@ public class ItemControllerGateway {
         return itemClient.deleteItem(itemId);
     }
 
-//    @PostMapping("/{itemId}/comment")
-//    public ResponseEntity<CommentOutputDto> postComment(@Valid @RequestBody CommentInputDto dto,
-//                                                        @PathVariable Long itemId,
-//                                                        @RequestHeader("X-Sharer-User-Id") @NotNull Long userId) {
-//        return itemClient.addComment(dto, itemId, userId);
-//    }
+    @PostMapping("/{itemId}/comment")
+    public ResponseEntity<CommentOutputDto> postComment(@Valid @RequestBody CommentInputDto dto,
+                                                        @PathVariable Long itemId,
+                                                        @RequestHeader("X-Sharer-User-Id") @NotNull Long userId) {
+        return itemClient.addComment(dto, itemId, userId);
+    }
 }

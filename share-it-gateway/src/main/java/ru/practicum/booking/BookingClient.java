@@ -15,6 +15,7 @@ import ru.practicum.MainClient;
 import ru.practicum.booking.dto.BookingRequestDto;
 import ru.practicum.booking.dto.BookingResponseDto;
 import ru.practicum.booking.dto.BookingState;
+import ru.practicum.exceptions.UnsupportedBookingState;
 import ru.practicum.util.ResponseMaker;
 import ru.practicum.util.UriPathBuilderWithParams;
 
@@ -73,7 +74,7 @@ public class BookingClient extends MainClient {
 
     protected ResponseEntity<Object[]> getListOfBookings(String path, Long userId, String stateParam, BookingPaginationParams params) {
         BookingState state = BookingState.from(stateParam)
-                .orElseThrow(() -> new UnsupportedOperationException("Unknown state: " + stateParam));
+                .orElseThrow(() -> new UnsupportedBookingState("Unknown state: " + stateParam));
         HttpEntity<?> entity = new HttpEntity<>(defaultHeaders(userId));
         Map<String, String> parameters = Map.of(
                 "state", state.toString(),
