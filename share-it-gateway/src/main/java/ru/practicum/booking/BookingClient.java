@@ -78,7 +78,7 @@ public class BookingClient extends MainClient {
         HttpEntity<?> entity = new HttpEntity<>(defaultHeaders(userId));
         Map<String, String> parameters = Map.of(
                 "state", state.toString(),
-                "page", params.from().toString(),
+                "from", params.from().toString(),
                 "size", params.size().toString()
         );
         ResponseEntity<Object[]> response;
