@@ -1,9 +1,10 @@
 package ru.practicum.item.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import ru.practicum.booking.dto.BookingInItemResponseDto;
 import ru.practicum.comment.dto.CommentOutputDto;
-import ru.practicum.user.User;
+import ru.practicum.user.dto.UserDto;
 
 import java.util.List;
 
@@ -16,7 +17,8 @@ public class ItemOutputDto {
     private Boolean available;
     private BookingInItemResponseDto lastBooking;
     private BookingInItemResponseDto nextBooking;
-    private User user;
+    @JsonProperty("user")
+    private UserDto user;
     private Long requestId;
     private List<CommentOutputDto> comments;
 }

@@ -1,9 +1,10 @@
 package ru.practicum.booking.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import lombok.Data;
-import ru.practicum.item.Item;
-import ru.practicum.user.User;
+import ru.practicum.item.dto.ItemDto;
+import ru.practicum.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 
@@ -13,9 +14,11 @@ public class BookingResponseDto {
     private Long id;
     private LocalDateTime start;
     private LocalDateTime end;
-    private Item item;
+    @SerializedName("item")
+    @JsonProperty("item")
+    private ItemDto itemDto;
     @JsonProperty("booker")
-    private User user;
+    private UserDto user;
     @JsonProperty("status")
     private BookingState bookingState;
 }

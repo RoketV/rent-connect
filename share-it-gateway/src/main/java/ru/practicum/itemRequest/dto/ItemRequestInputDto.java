@@ -2,7 +2,7 @@ package ru.practicum.itemRequest.dto;
 
 
 import lombok.Data;
-import ru.practicum.user.User;
+import ru.practicum.user.dto.UserDto;
 
 import javax.validation.constraints.NotBlank;
 
@@ -12,5 +12,5 @@ public class ItemRequestInputDto {
     private Long id;
     @NotBlank
     private String description;
-    private User owner;
+    private UserDto owner;
 }

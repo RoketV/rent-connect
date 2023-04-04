@@ -1,7 +1,8 @@
 package ru.practicum.item.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import ru.practicum.user.User;
+import ru.practicum.user.dto.UserDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -16,6 +17,7 @@ public class ItemInputDto {
     private String description;
     @NotNull
     private Boolean available;
-    private User user;
+    @JsonProperty("user")
+    private UserDto user;
     private Long requestId;
 }
